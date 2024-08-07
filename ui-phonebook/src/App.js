@@ -1,8 +1,8 @@
+import { useState, useEffect } from 'react'
 import Filter from './Filter.js'
 import InputForm from './InputForm.js'
 import Numbers from './Numbers.js'
 import Notification from './Notification.js'
-import { useState, useEffect } from 'react'
 import { getData, postData, updateData, deleteData} from './serverFunc.js'
 
 const cors = require('cors')
@@ -31,106 +31,91 @@ useEffect( () => {
 }, [] )
 
 
-  function handleNameChange(e) {
-      console.log("handleNameChange")
-     setNewName(e.target.value)
+  const handleNameChange = (e) => setNewName(e.target.value)
+  const handleNumberChange = (e) => setNewNumber(e.target.value)
+
+  function handleFilterChange(e) {
+
+      if (e.target.value.length > 0) {
+          setShowAll(false)
+          console.log("setShowAll false", e.target.value)
+      }
+      else {
+          setShowAll(true)
+          console.log("setShowAll true", e.target.value)
+      }
+      console.log("handleFilterChange")
+      setNewFilter(e.target.value)
   }
-    function handleNumberChange(e) {
-        console.log("handleNumberChange")
-        setNewNumber(e.target.value)
+
+  function deletePerson(event) {
+     console.log("1person will be deleted", event.id)
+      if (window.confirm(`DELETE ${event.name}?`)){
+        deleteData(event.id)
+      }
+  }
+
+  function successMsgfunction () {
+    setSuccessMsg(`Added ${newName}`)
+      setTimeout(() => {
+          setSuccessMsg(null)
+      }, 5000)
+  }
+
+  function createPerson(e) {
+    console.log("Person created")
+      e.preventDefault()
+      console.log(e)
+      console.log(e.target[0].value)
+      console.log(e.target[1].value)
+      const newPerson = {
+        //id: persons.length + 1,
+        name: newName,
+        number: newNumber,
+      }
+      const duplicateCheck = persons.some((person) => person.name === newName)
+
+      if(duplicateCheck === false) {
+        postData(newPerson)
+        //window.location.reload()
+        setPersons(persons.concat(newPerson))
+        successMsgfunction()
+
+        setNewName('')
+        setNewNumber('')
+      }
+      if(duplicateCheck === true) {
+          alert(`${newName} is already on the list`)
+          setNewName('')
+          setNewNumber('')
+      }
+     console.log(duplicateCheck) 
+        
+  }
+
+  function mapPersons(persons) {
+    if (showAll === false) {
+      let filteredList = []
+
+      console.log("persons", persons)
+      filteredList = persons.filter(person => 
+        person.name.toLowerCase().includes(newFilter.toLowerCase()))
+
+
+      return filteredList.map((person) =>
+        <li key={person.id}>{person.name} {person.number} 
+        <button onClick={() => deletePerson(person)} >
+        Delete
+        </button></li>)
+      }
+    else {
+      return persons.map((person) =>
+          <li key={person.id}> {person.name} {person.number} 
+          <button onClick={() => deletePerson(person)} >
+          Delete
+          </button></li>)
     }
-        function handleFilterChange(e) {
-
-            if (e.target.value.length > 0) {
-                setShowAll(false)
-                console.log("setShowAll false", e.target.value)
-            }
-            else {
-                setShowAll(true)
-                console.log("setShowAll true", e.target.value)
-            }
-            console.log("handleFilterChange")
-            setNewFilter(e.target.value)
-        }
-
-          function deletePerson(e) {
-             console.log("1person will be deleted", e.id)
-              if (window.confirm(`DELETE ${e.name}?`)){
-                deleteData(e.id)
-                 const updatedList = persons.filter((person) => person.id !== e.id) 
-                 setPersons(updatedList)
-              }
-          }
-
-              function createPerson(e) {
-                console.log("Person created")
-                  e.preventDefault()
-                  console.log(e)
-                  console.log(e.target[0].value)
-                  console.log(e.target[1].value)
-                  const newPerson = {
-                    id: persons.length + 1,
-                    name: newName,
-                    number: newNumber,
-                  }
-                  const duplicateCheck = persons.some((person) => person.name === newName)
-                  console.log(newName)
-                  if(duplicateCheck === false) {
-                    postData(newPerson)
-                    //window.location.reload()
-                    setPersons(persons.concat(newPerson))
-                    setSuccessMsg(`Added ${newName}`)
-                      setTimeout(() => {
-                          setSuccessMsg(null)
-                      }, 5000)
-                    setNewName('')
-                    setNewNumber('')
-                    //funktiokutsu
-                  }
-                  if(duplicateCheck === true) {
-                      alert(`${newName} is already on the list`)
-                      setNewName('')
-                      setNewNumber('')
-                  }
-                 console.log(duplicateCheck) 
-                    
-              }
-
-                  function mapPersons(persons) {
-                      if (showAll === false) {
-                          /*
-                          setLowerCaseNewFilter(newFilter.toLowerCase())
-                          setLowerCasePersons(persons)
-                          lowerCasePersons.map( (person) => person.name.toLowerCase()) 
-                          lowerCasePersons.filter((person) => person.name.includes(lowerCaseNewFilter))
-                          */
-                          let filteredList = []
-
-                          filteredList = persons.filter(person => person.name.toLowerCase().includes(newFilter.toLowerCase()))
-
-
-                          /*
-
-                          lowerCasePersons.filter((person)=> person.name.includes(lowerCaseNewFilter))
-                          setFilteredList(persons)
-                          filteredList.filter((person) => lowerCasePersons.includes(person.id))
-                          console.log("filteredList", filteredList)
-                          console.log("newFilter", newFilter)
-                          */
-                          return filteredList.map((person) =>
-                              <li key={person.id}>{person.name} {person.number} 
-                              <button onClick={() => deletePerson(person)} >
-                              Delete
-                              </button></li>)
-                      }
-                      else {
-                      return persons.map((person) =>
-                          <li key={person.id}>{person.name} {person.number} 
-                          <button onClick={() => deletePerson(person)} >
-                          Delete
-                          </button></li>)
-                      }
-                        }
+  }
 
         return (
             <div>

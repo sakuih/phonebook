@@ -1,5 +1,5 @@
 import axios from 'axios'
-const serverUrl = '/api/persons'
+const serverUrl = 'http://localhost:3001/api/persons/'
 
 export function getData() {
     console.log("getData")
@@ -14,15 +14,22 @@ export function postData (newPerson) {
 
 export function updateData(person) {
     console.log("updateData")
-    axios.put(`${serverUrl}/${person.id}`, {
+    axios.put(`${serverUrl}${person._id}`, {
         name: person.name,
         number: person.number
     })
 }
 
 export function deleteData (id) {
-    console.log("deleteData")
-    console.log(`${serverUrl}/${id}`)
-    axios.delete(`${serverUrl}/${id}`)
+    console.log("deleteData", id)
+    console.log("deleteData type", typeof(id))
+    console.log(`${serverUrl}${id}`)
+    axios.delete(`${serverUrl}${id}`)
+      .then(() => {
+          console.log("DSADSADAS")
+      })
+      .catch(() => {
+            console.log("pooioiio")
+      })
 }
 

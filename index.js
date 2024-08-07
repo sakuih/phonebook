@@ -5,6 +5,7 @@ const date = new Date()
 const app = express()
 const PORT = process.env.PORT || 3001
 const cors = require('cors')
+const Person = require('./models/Person')
 
 let data = [
     { 
@@ -29,7 +30,7 @@ let data = [
     }
 ]
 
-app.use(morgan('tiny'))
+app.use(morgan(':method :url :status :response-time ms'))
 app.use(express.json())
 app.use(cors())
 app.use(express.static('build'))
@@ -37,6 +38,11 @@ app.use(express.static('build'))
 //app.set('json spaces', 2)
 
 app.get("/api/persons/", (req, res) => {
+  Person.find({})
+    .then(result => {
+      res.send(JSON.stringify((result, null, 4)))
+      
+    })
   res.header("Content-type","application/json")
   res.send(JSON.stringify(data, null, 4))
 })

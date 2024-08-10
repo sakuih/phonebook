@@ -73,6 +73,7 @@ useEffect( () => {
       //let id = 0
       if (newName === '' || newNumber === ''){
         window.alert(`name or number is missing`)
+        console.log("error 400")
         return false
       }
 

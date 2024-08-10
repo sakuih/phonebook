@@ -12,9 +12,9 @@ export function postData (newPerson) {
     })
 }
 
-export function updateData(person) {
+export function updateData(person, id) {
     console.log("updateData")
-    axios.put(`${serverUrl}${person._id}`, {
+    axios.put(`${serverUrl}${id}`, {
         name: person.name,
         number: person.number
     })
@@ -23,7 +23,7 @@ export function updateData(person) {
 export function deleteData (id) {
     console.log("deleteData", id)
     console.log("deleteData type", typeof(id))
-    console.log(`${serverUrl}${id}`)
+    //console.log(`${serverUrl}${id}`)
     axios.delete(`${serverUrl}${id}`)
       .then(() => {
           console.log("DSADSADAS")

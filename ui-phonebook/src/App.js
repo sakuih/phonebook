@@ -5,7 +5,7 @@ import Numbers from './Numbers.js'
 import Notification from './Notification.js'
 import { getData, postData, updateData, deleteData} from './serverFunc.js'
 
-const cors = require('cors')
+//const cors = require('cors')
 // Component imports
 
 const App = () => {
@@ -49,9 +49,11 @@ useEffect( () => {
   }
 
   function deletePerson(event) {
-     console.log("1person will be deleted", event.id)
+     console.log("person will be deleted", event.id)
       if (window.confirm(`DELETE ${event.name}?`)){
         deleteData(event.id)
+        const updatedList = persons.filter((person) => person._id !== event._id)
+        setPersons(updatedList)
       }
   }
 
@@ -68,6 +70,14 @@ useEffect( () => {
       console.log(e)
       console.log(e.target[0].value)
       console.log(e.target[1].value)
+      //let id = 0
+      if (newName === '' || newNumber === ''){
+        window.alert(`name or number is missing`)
+        return false
+      }
+
+        
+
       const newPerson = {
         //id: persons.length + 1,
         name: newName,
@@ -85,7 +95,9 @@ useEffect( () => {
         setNewNumber('')
       }
       if(duplicateCheck === true) {
-          alert(`${newName} is already on the list`)
+        //if (window.confirm(`${newName} is already on the list. Do you want to update the number?`))
+          //updateData(newPerson, id)
+          window.alert(`${newName} is already on the list.`)
           setNewName('')
           setNewNumber('')
       }

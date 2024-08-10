@@ -5,15 +5,23 @@ const date = new Date()
 const app = express()
 const PORT = process.env.PORT || 3001
 const cors = require('cors')
+const bodyParser = require('body-parser')
 const persons = require('./models/person')
 
-
-app.use(morgan('tiny'))
+ 
 app.use(express.json())
-app.use(cors())
-//app.use(express.static('build'))
 
-//app.set('json spaces', 2)
+
+morgan.token('body', req => {
+  return JSON.stringify(req.body)
+})
+
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+app.use(cors())
+app.use(bodyParser.json())
+app.use(express.static('build'))
+
 
 let data = [
   {
@@ -24,18 +32,23 @@ let data = [
 ]
 
 
-app.get('/api/persons/', (req, res) => {
+app.get('/api/persons/', (req, res, err) => {
   persons.find({})
     .then(result => {
       res.send(JSON.stringify(result, null, 4))
       data = result
     })
+    .catch(err => next(err))
 })
 
 
 app.get("/info/", (req, res) => {
-  res.send(`Phonebook has info for ${data.length} people <br>  
-      time ${date}`)
+  persons.countDocuments()
+    .then(result => {
+      res.send(`Phonebook has info for ${result} people <br>  
+        time ${date}`)
+    })
+    .catch(err => next(err))
 })
 
 
@@ -57,33 +70,55 @@ app.delete('/api/persons/:id/', (req, res, next) => {
 
   persons.findByIdAndRemove(req.params.id)
     .then(result => {
-    if (result !== null)
-      res.status(204).end()
-    else
-      res.status(404).end()
+      res.send("Success")
+      //next(err)
   })
     .catch(err => next(err))
 
 })
 
-app.post("/api/persons/", (req, res) => {
+app.post("/api/persons/", (req, res, next) => {
 
   const Person = new persons({
       name: req.body.name,
       number: req.body.number
   })
 
+  const check = persons.find({ name: req.params.name })
+
+  //    .then(result => {
+  //      return res.status(400).json({ error: "Name already exists", status: 400})
+  //    })
+  if (check)
+    return res.status(400).json({ error: "Name already exists", status: 400})
+  /*
+  const check = data.some((person) => person.name === req.body.name)
+  if (check)
+    return res.status(400).json({ error: `${req.body.name} already exists`, status: 400})
+
+
+  */
+  if (req.body.name === '' || req.body.number === '') {
+    return res.status(400).json({ error: "content missing", status: 400})
+  }
+
   Person.save().then(() => {
-      console.log(Person)
-      console.log(`added ${Person.name} ${Person.number} to phonebook`) 
+      //console.log(Person)
+      //console.log(`added ${Person.name} ${Person.number} to phonebook`) 
       res.send(JSON.stringify(Person, null, 4))
-  })
+  }).catch(err => next(err))
 
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
 
 
+  res.set('Content-type', 'application/json')
+  persons.findByIdAndUpdate(req.params.id, req.body)
+    .then(result => res.json({msg: req.body }))
+    .catch(err => next(err)
+    )
+  /*
   persons.findByIdAndUpdate(
     req.params.id,
     {
@@ -94,8 +129,27 @@ app.put('/api/persons/:id', (req, res, next) => {
     },
     {new: true}
   )
+  */
   
 })
+
+app.get('/api/persons/errorTest', (req, res, next) => {
+  let error = new Error('Error test')
+  error.status = 200
+  next(error)
+})
+
+function errorHandler(err, req, res, next) {
+  //console
+  console.error(err.stack)
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal server error",
+    status: err.status,
+  })
+}
+
+app.use(errorHandler)
   
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`)

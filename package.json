@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
+    "lint": "eslint .",
     "start": "node index.js",
     "build": "node build",
     "build:ui": "rm -rf build && cd ./ui-phonebook/ && npm run build  && cp -r build ../build",
     "build:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
- "proxy": "http://localhost:3000", 
- "keywords": [],
+  "proxy": "http://localhost:3000",
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -23,6 +24,10 @@
     "serve": "^14.2.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@stylistic/eslint-plugin-js": "^2.6.2",
+    "eslint": "^9.9.0",
+    "globals": "^15.9.0",
     "nodemon": "^3.0.1"
   }
 }

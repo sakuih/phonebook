@@ -18,16 +18,26 @@ morgan.token('body', req => {
 
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-app.use(cors())
+const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000']
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('notAllowed by CORS'))
+    }
+  },
+  credentials: true,
+}))
 app.use(bodyParser.json())
 app.use(express.static('build'))
 
 
 let data = [
   {
-    "id": 1231,
-    "name": "test",
-    "number": "not connected to db"
+    'id': 1231,
+    'name': 'test',
+    'number': 'not connected to db'
   }
 ]
 
@@ -42,7 +52,7 @@ app.get('/api/persons/', (req, res, err) => {
 })
 
 
-app.get("/info/", (req, res) => {
+app.get('/info/', (req, res) => {
   persons.countDocuments()
     .then(result => {
       res.send(`Phonebook has info for ${result} people <br>  
@@ -64,48 +74,30 @@ app.get('/api/persons/:id', (req, res, next) => {
 })
 
 app.delete('/api/persons/:id/', (req, res, next) => {
-  console.log("req params: ", req.params.id)
+  console.log('req params: ', req.params.id)
   
   //const query = { _id : req.params.id}
 
   persons.findByIdAndRemove(req.params.id)
     .then(result => {
-      res.send("Success")
+      res.send('Success')
       //next(err)
-  })
+    })
     .catch(err => next(err))
 
 })
 
-app.post("/api/persons/", (req, res, next) => {
+app.post('/api/persons/', (req, res, next) => {
 
   const Person = new persons({
-      name: req.body.name,
-      number: req.body.number
+    name: req.body.name,
+    number: req.body.number
   })
 
-  const check = persons.find({ name: req.params.name })
-
-  //    .then(result => {
-  //      return res.status(400).json({ error: "Name already exists", status: 400})
-  //    })
-  if (check)
-    return res.status(400).json({ error: "Name already exists", status: 400})
-  /*
-  const check = data.some((person) => person.name === req.body.name)
-  if (check)
-    return res.status(400).json({ error: `${req.body.name} already exists`, status: 400})
-
-
-  */
-  if (req.body.name === '' || req.body.number === '') {
-    return res.status(400).json({ error: "content missing", status: 400})
-  }
-
   Person.save().then(() => {
-      //console.log(Person)
-      //console.log(`added ${Person.name} ${Person.number} to phonebook`) 
-      res.send(JSON.stringify(Person, null, 4))
+    //console.log(Person)
+    //console.log(`added ${Person.name} ${Person.number} to phonebook`) 
+    res.send(JSON.stringify(Person, null, 4))
   }).catch(err => next(err))
 
 })
@@ -144,7 +136,7 @@ function errorHandler(err, req, res, next) {
   console.error(err.stack)
   res.status(err.status || 500).json({
     success: false,
-    message: err.message || "Internal server error",
+    message: err.message || 'Internal server error',
     status: err.status,
   })
 }

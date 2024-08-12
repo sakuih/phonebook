@@ -28,44 +28,42 @@ const persons = mongoose.model('persons', personSchema)
 
 
 if (process.argv.length == 5) {
-    console.log(`${process.argv.length} yay`)
-  
-    const name = process.argv[3]
-    const number = process.argv[4]
+  console.log(`${process.argv.length} yay`)
 
-    const Person = new persons ({
-      name: name,
-      number: number
-    })
+  const name = process.argv[3]
+  const number = process.argv[4]
 
-   Person.save().then(() => {
-      console.log(`added ${name} ${number} to phonebook`) 
-      mongoose.connection.close()
-   })
+  const Person = new persons ({
+    name: name,
+    number: number
+  })
+
+  Person.save().then(() => {
+    console.log(`added ${name} ${number} to phonebook`) 
+    mongoose.connection.close()
+  })
 }
 
 
 
 if (process.argv.length == 3) {
 
-    const pass = process.argv[3]
+  const pass = process.argv[3]
 
-    if (pass === process.env.MONGO_PASS) {
-      console.log("Invalid password")
-      process.exit(1)
-    }
-    else {
-      persons.find({})
-          .then(result => {
-      console.log('phonebook:')
-      result.forEach(person => {
-        console.log(`${ person.name } ${ person.number }`)
+  if (pass === process.env.MONGO_PASS) {
+    console.log('Invalid password')
+    process.exit(1)
+  }
+  else {
+    persons.find({})
+      .then(result => {
+        console.log('phonebook:')
+        result.forEach(person => {
+          console.log(`${ person.name } ${ person.number }`)
+        })
+        mongoose.connection.close()
       })
-      mongoose.connection.close()
-      })
-    }
-      
-
+  }
 }
 
 

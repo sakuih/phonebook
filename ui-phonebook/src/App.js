@@ -5,7 +5,7 @@ import Numbers from './Numbers.js'
 import Notification from './Notification.js'
 import { getData, postData, updateData, deleteData} from './serverFunc.js'
 
-//const cors = require('cors')
+const cors = require('cors')
 // Component imports
 
 const App = () => {

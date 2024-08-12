@@ -19,8 +19,14 @@ morgan.token('body', req => {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 //const allowedOrigins = ['http://localhost:3001']
-app.use(cors())
-/*app.use(cors({
+//app.use(cors())
+app.use(cors({
+  origin: 'https://fsopen-phonebook-6ih1.onrender.com/',
+  header: ['Content-Type'],
+  credentials: true,
+}))
+  
+/*
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true)

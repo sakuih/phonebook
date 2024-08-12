@@ -1,5 +1,5 @@
 import axios from 'axios'
-const serverUrl = 'http://localhost:3001/api/persons/'
+const serverUrl = '/api/persons/'
 
 export function getData() {
     console.log("getData")

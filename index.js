@@ -18,8 +18,9 @@ morgan.token('body', req => {
 
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000']
-app.use(cors({
+//const allowedOrigins = ['http://localhost:3001']
+app.use(cors())
+/*app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true)
@@ -29,6 +30,7 @@ app.use(cors({
   },
   credentials: true,
 }))
+*/
 app.use(bodyParser.json())
 app.use(express.static('build'))
 
